@@ -1,7 +1,7 @@
 import os
 import argparse
-from utils.mp3.mp3_song import MP3Song
-from utils.mp3.mp3_utils import print_mp3_files
+from mp3_song import MP3Song
+from mp3_utils import print_mp3_files
 
 
 def get_mp3_files_in(path, is_recursive):
@@ -66,13 +66,13 @@ def main():
     list_sub_parser = parser.add_subparsers(dest='command', required=True, title='Commands',
                                             metavar='  Run \'[command] --help\' for more information on a command.')
     ls = list_sub_parser.add_parser('ls', help='Show a list of every mp3 files in this folder.')
-    ls.add_argument('-r', help='Show every mp3 files in sub folders also.', action='store_true')
+    ls.add_argument('-r', '--recursive', help='Show every mp3 files in sub folders also.', action='store_true')
 
     update = list_sub_parser.add_parser('update', help='Update the metadata of one or some mp3 files.')
     update.add_argument('--title', help='Update the mp3 title')
     update.add_argument('--artist', help='Update the mp3 artist')
     update.add_argument('--album', help='Update the mp3 album')
-    update.add_argument('-r', help='Update every mp3 files in sub folders also.', action='store_true')
+    update.add_argument('-r', '--recursive', help='Update every mp3 files in sub folders also.', action='store_true')
     update.add_argument('file')
 
     info = list_sub_parser.add_parser('info', help='Show the metadata of one mp3 file.')
@@ -85,15 +85,16 @@ def main():
     # parser.add_argument('--lyric')
 
     args = parser.parse_args()
+    path = os.path.join(os.curdir, 'music')
 
     if args.command == 'ls':
         is_recursive = True if args.recursive is not None else False
-        print_mp3_files(os.curdir, is_recursive)
+        print_mp3_files(path, is_recursive)
     elif args.command == 'update':
         # todo update this
         if args.file == '.':
             is_recursive = True if args.recursive is not None else False
-            mp3s = get_mp3_files_in(os.curdir, is_recursive)
+            mp3s = get_mp3_files_in(path, is_recursive)
             for file in mp3s:
                 mp3 = MP3Song(file)
                 print('Analyzing %s.mp3:' % mp3.filename)
@@ -106,6 +107,9 @@ def main():
         # todo improve the info shown
         if os.path.exists(args.file):
             mp3 = MP3Song(args.file)
+            mp3.print_known_tags()
+        elif os.path.exists(os.path.join(path, args.file)):
+            mp3 = MP3Song(os.path.join(path, args.file))
             mp3.print_known_tags()
         else:
             print('ERROR: File not found')

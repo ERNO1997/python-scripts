@@ -39,7 +39,7 @@ def scan_mp3_files(path, is_recursive):
     Return a list of every mp3 file found in the current path and sub-paths if is_recursive is set as True.
 
     If it found mp3 files inside a folder it will put as an element in the list a dict which hold the folder name as
-    the key and a list of mp3 files.
+    the key and a list of mp3 files as the value.
 
     i.e. ['1.mp3', '2.mp3', {'folder': ['3.mp3', '4.mp3']}].
 
